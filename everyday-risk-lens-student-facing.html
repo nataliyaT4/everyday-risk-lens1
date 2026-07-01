@@ -1,0 +1,1242 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Everyday Risk Lens | Data-based World Risk Poll widget</title>
+  <style>
+    :root {
+      --bg: #f7f7fb;
+      --panel: #ffffff;
+      --ink: #162033;
+      --muted: #5d667a;
+      --line: #d9deea;
+      --accent: #8a1d61;
+      --accent-dark: #611447;
+      --teal: #0f766e;
+      --orange: #b45309;
+      --soft-pink: #fdf2f8;
+      --soft-teal: #effdf8;
+      --soft-orange: #fff7ed;
+      --shadow: 0 12px 30px rgba(22, 32, 51, 0.10);
+      --radius: 18px;
+      --focus: 0 0 0 4px rgba(138, 29, 97, 0.18);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(138,29,97,0.12), transparent 34rem),
+        radial-gradient(circle at bottom right, rgba(15,118,110,0.11), transparent 35rem),
+        var(--bg);
+      color: var(--ink);
+      line-height: 1.45;
+    }
+
+    .app {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 22px;
+    }
+
+    header {
+      background: linear-gradient(135deg, #151d32, #2c1430 58%, #611447);
+      color: #fff;
+      border-radius: calc(var(--radius) + 8px);
+      padding: 28px;
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
+    }
+
+    header:after {
+      content: "";
+      position: absolute;
+      width: 260px;
+      height: 260px;
+      right: -70px;
+      top: -100px;
+      border: 34px solid rgba(255,255,255,0.08);
+      border-radius: 50%;
+    }
+
+    .kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 10px;
+      border: 1px solid rgba(255,255,255,0.25);
+      border-radius: 999px;
+      font-size: 0.82rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: #f2d9ea;
+      font-weight: 800;
+    }
+
+    h1 {
+      margin: 14px 0 8px;
+      font-size: clamp(1.8rem, 4vw, 3.1rem);
+      line-height: 1.05;
+      max-width: 880px;
+    }
+
+    h2 {
+      font-size: 1.28rem;
+      margin: 0 0 12px;
+    }
+
+    h3 {
+      font-size: 1.02rem;
+      margin: 0 0 8px;
+    }
+
+    p {
+      margin: 0 0 12px;
+    }
+
+    .intro {
+      color: #f6eaf3;
+      max-width: 900px;
+      font-size: 1.03rem;
+    }
+
+    .header-note {
+      margin-top: 16px;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      max-width: 1010px;
+    }
+
+    .note-pill {
+      background: rgba(255,255,255,0.10);
+      border: 1px solid rgba(255,255,255,0.18);
+      border-radius: 14px;
+      padding: 11px 12px;
+      font-size: 0.93rem;
+    }
+
+    main {
+      display: grid;
+      grid-template-columns: minmax(290px, 390px) minmax(0, 1fr);
+      gap: 18px;
+      margin-top: 18px;
+      align-items: start;
+    }
+
+    .panel {
+      background: rgba(255,255,255,0.94);
+      border: 1px solid rgba(217,222,234,0.9);
+      border-radius: var(--radius);
+      padding: 18px;
+      box-shadow: var(--shadow);
+    }
+
+    .sticky {
+      position: sticky;
+      top: 12px;
+    }
+
+    label, .label {
+      display: block;
+      font-weight: 800;
+      font-size: 0.93rem;
+      margin-bottom: 6px;
+    }
+
+    .hint {
+      color: var(--muted);
+      font-size: 0.88rem;
+      margin-top: 4px;
+    }
+
+    select, button, textarea {
+      font: inherit;
+    }
+
+    select {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--ink);
+    }
+
+    select:focus, button:focus, textarea:focus {
+      outline: none;
+      box-shadow: var(--focus);
+    }
+
+    .control-group {
+      margin: 15px 0;
+      padding-top: 2px;
+    }
+
+    .button-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 14px;
+    }
+
+    button {
+      border: 0;
+      border-radius: 999px;
+      padding: 10px 14px;
+      cursor: pointer;
+      font-weight: 850;
+      background: var(--ink);
+      color: white;
+    }
+
+    button.secondary {
+      background: #eef1f7;
+      color: var(--ink);
+      border: 1px solid var(--line);
+    }
+
+    .clarity-box {
+      border-radius: 16px;
+      background: var(--soft-teal);
+      border: 1px solid #c7f0e4;
+      padding: 13px;
+      margin: 14px 0;
+    }
+
+    .clarity-box strong {
+      color: var(--teal);
+    }
+
+    .grid {
+      display: grid;
+      gap: 18px;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .card {
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 14px;
+      background: #fff;
+      min-height: 118px;
+    }
+
+    .metric-label {
+      color: var(--muted);
+      font-size: 0.84rem;
+      margin-bottom: 8px;
+      font-weight: 800;
+    }
+
+    .metric {
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+      font-size: 2rem;
+      line-height: 1;
+      font-weight: 900;
+      letter-spacing: -0.04em;
+    }
+
+    .metric small {
+      font-size: 0.84rem;
+      color: var(--muted);
+      letter-spacing: 0;
+    }
+
+    .bar {
+      height: 9px;
+      background: #edf0f6;
+      border-radius: 999px;
+      overflow: hidden;
+      margin-top: 12px;
+    }
+
+    .bar > span {
+      display: block;
+      height: 100%;
+      width: 0%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--teal), var(--accent), var(--orange));
+      transition: width 200ms ease;
+    }
+
+    .chart-wrap {
+      display: grid;
+      grid-template-columns: minmax(0, 1.35fr) minmax(230px, 0.65fr);
+      gap: 16px;
+      align-items: stretch;
+    }
+
+    .chart-card {
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: #fff;
+    }
+
+    svg {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    .zone {
+      fill: #f4f6fb;
+      stroke: #dfe4ef;
+      stroke-width: 1;
+    }
+
+    .zone.alt { fill: #fff7ed; }
+    .zone.good { fill: #eefdf7; }
+    .zone.attn { fill: #fdf2f8; }
+    .axis { stroke: #6a7284; stroke-width: 1.2; }
+    .gridline { stroke: #dfe4ef; stroke-dasharray: 5 5; stroke-width: 1; }
+    .point { fill: #7c8496; stroke: #fff; stroke-width: 3; opacity: 0.85; }
+    .point.selected { fill: var(--accent); stroke-width: 6; opacity: 1; filter: drop-shadow(0 6px 10px rgba(22,32,51,.24)); }
+    .point-label { font: 650 10.5px system-ui, sans-serif; fill: #4d566b; }
+    .point-label.selected { font: 900 12px system-ui, sans-serif; fill: var(--accent-dark); }
+    .chart-text { font: 800 13px system-ui, sans-serif; fill: #252d40; }
+    .chart-small { font: 650 11px system-ui, sans-serif; fill: #5d667a; }
+    .line-worry { fill: none; stroke: var(--accent); stroke-width: 4; }
+    .line-harm { fill: none; stroke: var(--teal); stroke-width: 4; }
+    .trend-dot-worry { fill: var(--accent); }
+    .trend-dot-harm { fill: var(--teal); }
+
+    .interpretation {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .tag {
+      display: inline-flex;
+      width: fit-content;
+      gap: 6px;
+      align-items: center;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: var(--soft-pink);
+      color: #861657;
+      font-size: 0.82rem;
+      font-weight: 850;
+      border: 1px solid #f5cbe4;
+    }
+
+    .callout {
+      border-left: 5px solid var(--accent);
+      background: #fff;
+      border-radius: 14px;
+      padding: 13px 14px;
+      border-top: 1px solid var(--line);
+      border-right: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .callout.beck {
+      border-left-color: var(--teal);
+      background: #f7fffc;
+    }
+
+    .callout.warning {
+      border-left-color: var(--orange);
+      background: #fffaf2;
+    }
+
+    .steps {
+      display: grid;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .step {
+      display: grid;
+      grid-template-columns: 34px 1fr;
+      gap: 10px;
+      align-items: start;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: #fff;
+    }
+
+    .step-num {
+      display: inline-grid;
+      place-items: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 999px;
+      background: var(--accent);
+      color: white;
+      font-weight: 900;
+      font-size: 0.86rem;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: #fff;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.92rem;
+    }
+
+    th, td {
+      text-align: left;
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--line);
+      vertical-align: top;
+    }
+
+    th {
+      background: #f3f5fa;
+      font-size: 0.83rem;
+      color: #394258;
+    }
+
+    tr:last-child td {
+      border-bottom: 0;
+    }
+
+    tr.highlight {
+      background: #fff3fa;
+      font-weight: 800;
+    }
+
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 0.86rem;
+      font-weight: 700;
+    }
+
+    .legend span {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .swatch {
+      width: 12px;
+      height: 12px;
+      border-radius: 999px;
+      background: var(--accent);
+      display: inline-block;
+    }
+
+    .swatch.teal { background: var(--teal); }
+    .swatch.grey { background: #7c8496; }
+
+    textarea {
+      width: 100%;
+      min-height: 170px;
+      resize: vertical;
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      padding: 12px;
+      color: var(--ink);
+      background: #fff;
+    }
+
+    details {
+      border: 1px solid var(--line);
+      background: #fff;
+      border-radius: 16px;
+      padding: 12px 14px;
+      margin-top: 10px;
+    }
+
+    summary {
+      font-weight: 850;
+      cursor: pointer;
+    }
+
+    .footer {
+      margin: 18px 0 4px;
+      color: var(--muted);
+      font-size: 0.87rem;
+    }
+
+    .pill-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 8px 0 0;
+    }
+
+    .pill {
+      border-radius: 999px;
+      padding: 6px 9px;
+      background: #eef1f7;
+      color: #2f394f;
+      font-size: 0.82rem;
+      font-weight: 750;
+    }
+
+    ol, ul {
+      padding-left: 1.25rem;
+    }
+
+    @media (max-width: 960px) {
+      main,
+      .chart-wrap {
+        grid-template-columns: 1fr;
+      }
+      .sticky { position: static; }
+      .cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .header-note { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 560px) {
+      .app { padding: 12px; }
+      header { padding: 20px; }
+      .cards { grid-template-columns: 1fr; }
+      .metric { font-size: 1.7rem; }
+    }
+
+    @media print {
+      body { background: #fff; }
+      .sticky { position: static; }
+      button { display: none; }
+      .panel { break-inside: avoid; box-shadow: none; }
+      header { box-shadow: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header>
+      <span class="kicker">Data-based teaching widget</span>
+      <h1>Everyday Risk Lens</h1>
+      <p class="intro">
+        Explore real World Risk Poll 2025 data on worry and personal experience of harm.
+        This version does not invent scenario scores. You will describe the data first, then choose one sociological explanation to test using Beck’s risk society theory.
+      </p>
+      <div class="header-note" aria-label="Key ideas">
+        <div class="note-pill"><strong>Real data:</strong> global 2025 percentages from the report’s Charts 2.2 and 2.3.</div>
+        <div class="note-pill"><strong>Not hypothetical:</strong> changing the risk changes the reported data point.</div>
+        <div class="note-pill"><strong>Interpretation:</strong> the explanation prompt changes; the data does not.</div>
+      </div>
+    </header>
+
+    <main>
+      <aside class="panel sticky" aria-labelledby="controlsTitle">
+        <h2 id="controlsTitle">1. Choose what to analyse</h2>
+
+        <div class="clarity-box">
+          <p><strong>Important:</strong> the values shown are reported percentages from the World Risk Poll. The drop-downs below do not create a fictional scenario; they select and interpret real results.</p>
+        </div>
+
+        <div class="control-group">
+          <label for="riskSelect">1. Everyday risk</label>
+          <select id="riskSelect"></select>
+          <p class="hint" id="riskHint">Choose a risk from the report.</p>
+        </div>
+
+        <div class="control-group">
+          <label for="lensSelect">2. Explanation to test</label>
+          <select id="lensSelect">
+            <option value="none">Start with description only</option>
+            <option value="visibility">Visibility and media salience</option>
+            <option value="normalisation">Normalisation of everyday harm</option>
+            <option value="institutions">Institutions, regulation and infrastructure</option>
+            <option value="agency">Control, agency and individualisation</option>
+            <option value="inequality">Inequality and vulnerability</option>
+            <option value="expert">Expert knowledge and invisible risk</option>
+          </select>
+          <p class="hint">
+            This does not change the data. It changes the question you are using to interpret the data.
+          </p>
+        </div>
+
+        <div class="steps" aria-label="How to use this activity">
+          <div class="step">
+            <span class="step-num">1</span>
+            <div><strong>Read the data.</strong><br><span class="hint">What percentage are worried? What percentage experienced harm?</span></div>
+          </div>
+          <div class="step">
+            <span class="step-num">2</span>
+            <div><strong>Notice the gap.</strong><br><span class="hint">Is worry much higher than harm, or is harm relatively high despite lower worry?</span></div>
+          </div>
+          <div class="step">
+            <span class="step-num">3</span>
+            <div><strong>Interpret carefully.</strong><br><span class="hint">Use your chosen explanation to make a sociological argument, not a guess.</span></div>
+          </div>
+        </div>
+
+        <div class="button-row">
+          <button type="button" id="randomBtn">Pick a risk for me</button>
+          <button type="button" class="secondary" id="copyBtn">Copy my reflection</button>
+        </div>
+
+        <details open>
+          <summary>What is being measured?</summary>
+          <p class="hint">
+            <strong>Worry</strong> = % saying they are very or somewhat worried the risk could cause serious harm.
+          </p>
+          <p class="hint">
+            <strong>Experienced harm</strong> = % saying they personally experienced serious harm in the past two years.
+          </p>
+          <p class="hint">
+            These are self-reported global averages, not objective exposure or official injury statistics.
+          </p>
+        </details>
+      </aside>
+
+      <section class="grid">
+        <section class="panel" aria-labelledby="outputsTitle">
+          <h2 id="outputsTitle">2. Selected risk: reported values</h2>
+          <div class="cards">
+            <div class="card">
+              <div class="metric-label">Worried about serious harm</div>
+              <div class="metric"><span id="worryMetric">0</span><small>%</small></div>
+              <div class="bar"><span id="worryBar"></span></div>
+            </div>
+            <div class="card">
+              <div class="metric-label">Personally experienced harm</div>
+              <div class="metric"><span id="harmMetric">0</span><small>%</small></div>
+              <div class="bar"><span id="harmBar"></span></div>
+            </div>
+            <div class="card">
+              <div class="metric-label">Worry–harm gap</div>
+              <div class="metric"><span id="gapMetric">0</span><small>pts</small></div>
+              <div class="bar"><span id="gapBar"></span></div>
+            </div>
+            <div class="card">
+              <div class="metric-label">Pattern</div>
+              <div class="metric" style="font-size:1.1rem;letter-spacing:0;line-height:1.15;"><span id="zoneMetric">—</span></div>
+              <p class="hint" id="zoneHint"></p>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel chart-wrap" aria-labelledby="chartTitle">
+          <div>
+            <h2 id="chartTitle">3. Worry vs. harm map: all 2025 risks</h2>
+            <p class="hint">Each dot is one everyday risk from the report. The selected risk is highlighted.</p>
+            <div class="chart-card">
+              <svg id="scatterSvg" viewBox="0 0 680 530" role="img" aria-labelledby="scatterTitle scatterDesc">
+                <title id="scatterTitle">World Risk Poll worry and harm scatter chart</title>
+                <desc id="scatterDesc">A scatter chart plotting percentage worried against percentage personally experiencing harm for ten everyday risks in 2025.</desc>
+
+                <rect x="86" y="50" width="250" height="190" class="zone attn" rx="12"></rect>
+                <rect x="336" y="50" width="250" height="190" class="zone" rx="12"></rect>
+                <rect x="86" y="240" width="250" height="190" class="zone good" rx="12"></rect>
+                <rect x="336" y="240" width="250" height="190" class="zone alt" rx="12"></rect>
+
+                <text x="100" y="78" class="chart-text">High worry / lower harm</text>
+                <text x="100" y="98" class="chart-small">e.g. dread, visibility, salience</text>
+
+                <text x="350" y="78" class="chart-text">High worry / higher harm</text>
+                <text x="350" y="98" class="chart-small">recognised serious risks</text>
+
+                <text x="100" y="267" class="chart-text">Lower worry / lower harm</text>
+                <text x="100" y="287" class="chart-small">lower current priority</text>
+
+                <text x="350" y="267" class="chart-text">Higher harm / lower worry</text>
+                <text x="350" y="287" class="chart-small">hidden or normalised harm</text>
+
+                <line x1="86" y1="430" x2="586" y2="430" class="axis"></line>
+                <line x1="86" y1="50" x2="86" y2="430" class="axis"></line>
+                <line x1="336" y1="50" x2="336" y2="430" class="gridline"></line>
+                <line x1="86" y1="240" x2="586" y2="240" class="gridline"></line>
+
+                <text x="86" y="448" text-anchor="middle" class="chart-small">0%</text>
+                <text x="336" y="448" text-anchor="middle" class="chart-small">10%</text>
+                <text x="586" y="448" text-anchor="middle" class="chart-small">20%</text>
+
+                <text x="336" y="485" text-anchor="middle" class="chart-text">Personally experienced serious harm in past two years</text>
+                <text transform="translate(28 240) rotate(-90)" text-anchor="middle" class="chart-text">Worried about serious harm</text>
+
+                <g id="scatterPoints"></g>
+              </svg>
+            </div>
+            <div class="legend">
+              <span><i class="swatch grey"></i>Other risks</span>
+              <span><i class="swatch"></i>Selected risk</span>
+            </div>
+          </div>
+
+          <div class="interpretation">
+            <span class="tag" id="zoneTag">Scenario interpretation</span>
+            <div class="callout">
+              <h3>What the data shows</h3>
+              <p id="dataText">Select a risk to generate an interpretation.</p>
+            </div>
+            <div class="callout beck">
+              <h3>Beck connection</h3>
+              <p id="beckText">Risk society analysis will appear here.</p>
+            </div>
+            <div class="callout warning">
+              <h3>Your interpretation question</h3>
+              <p id="questionText">What would need to change for this risk to become more visible, preventable or fairly managed?</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel" aria-labelledby="trendTitle">
+          <h2 id="trendTitle">4. Trend view where the report provides comparable years</h2>
+          <p class="hint" id="trendHint">Some risks were newly included in 2025, so trend data is not available for every risk.</p>
+          <div class="chart-card">
+            <svg id="trendSvg" viewBox="0 0 760 315" role="img" aria-labelledby="trendSvgTitle trendSvgDesc">
+              <title id="trendSvgTitle">Trend chart for selected risk</title>
+              <desc id="trendSvgDesc">A line chart showing changes in worry and personal experience of harm across years where data is available.</desc>
+              <line x1="74" y1="246" x2="710" y2="246" class="axis"></line>
+              <line x1="74" y1="36" x2="74" y2="246" class="axis"></line>
+              <line x1="74" y1="193.5" x2="710" y2="193.5" class="gridline"></line>
+              <line x1="74" y1="141" x2="710" y2="141" class="gridline"></line>
+              <line x1="74" y1="88.5" x2="710" y2="88.5" class="gridline"></line>
+              <line x1="74" y1="36" x2="710" y2="36" class="gridline"></line>
+              <text x="58" y="250" text-anchor="end" class="chart-small">0%</text>
+              <text x="58" y="197" text-anchor="end" class="chart-small">20%</text>
+              <text x="58" y="145" text-anchor="end" class="chart-small">40%</text>
+              <text x="58" y="92" text-anchor="end" class="chart-small">60%</text>
+              <text x="58" y="40" text-anchor="end" class="chart-small">80%</text>
+              <g id="trendContent"></g>
+            </svg>
+          </div>
+          <div class="legend">
+            <span><i class="swatch"></i>Worry</span>
+            <span><i class="swatch teal"></i>Experienced harm</span>
+          </div>
+        </section>
+
+        <section class="panel" aria-labelledby="sourceTitle">
+          <h2 id="sourceTitle">5. Source reliability lens</h2>
+          <p>
+            Use this section to make a balanced judgement. A source can be useful and reliable for one purpose, but limited for another.
+          </p>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Why this source is useful</th>
+                  <th>Why you should use it with caution</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Large global survey: more than 143,000 interviews across 140 countries and territories.</td>
+                  <td>Large-scale survey data still depends on sampling, question wording, translation and fieldwork conditions.</td>
+                </tr>
+                <tr>
+                  <td>Produced by Lloyd’s Register Foundation with Gallup fieldwork and analysis.</td>
+                  <td>The report has an institutional purpose: improving safety. That does not make it unreliable, but it may shape the framing.</td>
+                </tr>
+                <tr>
+                  <td>Directly measures people’s reported worry and experience of harm.</td>
+                  <td>Self-reported data is not the same as objective exposure, official injuries or verified medical/environmental records.</td>
+                </tr>
+                <tr>
+                  <td>The report distinguishes between worry, harm and policy implications.</td>
+                  <td>Global averages can hide national, regional and social inequalities.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <details>
+            <summary>Suggested reliability sentence frame</summary>
+            <p class="hint">
+              “I would treat this report as a useful and fairly reliable source for comparing reported perceptions and experiences of everyday risk globally, because … However, I would not use it alone to prove objective levels of danger, because …”
+            </p>
+          </details>
+        </section>
+
+        <section class="panel" aria-labelledby="dataTableTitle">
+          <h2 id="dataTableTitle">6. Data table used in the widget</h2>
+          <p class="hint">These are the values currently plotted. Select a risk above to highlight a row.</p>
+          <div class="table-wrap">
+            <table id="dataTable">
+              <thead>
+                <tr>
+                  <th>Risk</th>
+                  <th>Worried, 2025</th>
+                  <th>Personally experienced harm, 2025</th>
+                  <th>Gap</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="panel" aria-labelledby="reflectionTitle">
+          <h2 id="reflectionTitle">7. My reflection draft</h2>
+          <p class="hint">
+            This draft updates when you change the selected risk or explanation. You can edit it before copying it into your notes or discussion post.
+          </p>
+          <textarea id="reflectionBox" aria-label="Reflection draft"></textarea>
+        </section>
+
+      </section>
+    </main>
+
+    <p class="footer">
+      Source note: Values are transcribed from Lloyd’s Register Foundation, World Risk Poll Report 2026, Charts 2.2 and 2.3, pages 11–12. This widget is for teaching and interpretation, not for statistical modelling.
+    </p>
+  </div>
+
+  <script>
+    const risks = {
+      road: {
+        label: "Traffic / roadside accidents",
+        short: "Road accidents",
+        worry2025: 77,
+        harm2025: 15,
+        worryTrend: { 2021: 71, 2023: 76, 2025: 77 },
+        harmTrend: { 2021: 13, 2023: 15, 2025: 15 },
+        note: "This risk has the highest prompted worry score in 2025 and is also the most common specific top-of-mind safety risk in the report.",
+        beck: "Road risk looks individual at first, but it is produced by transport systems, infrastructure, regulation, work patterns and public safety cultures."
+      },
+      storm: {
+        label: "Severe weather: floods or violent storms",
+        short: "Severe weather",
+        worry2025: 68,
+        harm2025: 17,
+        worryTrend: { 2019: 68, 2021: 66, 2023: 71, 2025: 68 },
+        harmTrend: { 2021: 15, 2023: 19, 2025: 17 },
+        note: "This risk has high worry and high reported harm compared with most other risks.",
+        beck: "Weather risk shows how environmental hazards become social risks through housing, infrastructure, warning systems and unequal capacity to recover."
+      },
+      crime: {
+        label: "Violent crime",
+        short: "Violent crime",
+        worry2025: 65,
+        harm2025: 10,
+        worryTrend: { 2019: 63, 2021: 58, 2023: 65, 2025: 65 },
+        harmTrend: { 2021: 7, 2023: 8, 2025: 10 },
+        note: "This risk has a large worry–harm gap in the global data.",
+        beck: "Crime risk is shaped by lived experience, local context, public trust, policing, inequality and media salience."
+      },
+      food: {
+        label: "Food you eat",
+        short: "Food",
+        worry2025: 60,
+        harm2025: 14,
+        worryTrend: { 2019: 61, 2021: 56, 2023: 59, 2025: 60 },
+        harmTrend: { 2021: 10, 2023: 11, 2025: 14 },
+        note: "The report notes that reported harm from food reached a record high globally.",
+        beck: "Food safety relies on complex supply chains, inspection, regulation and expert systems that most individuals cannot directly verify."
+      },
+      mental: {
+        label: "Mental health issues",
+        short: "Mental health",
+        worry2025: 54,
+        harm2025: 12,
+        worryTrend: { 2019: 48, 2021: 53, 2023: 56, 2025: 54 },
+        harmTrend: { 2021: 11, 2023: 12, 2025: 12 },
+        note: "Mental health sits near the middle of the global worry and harm distributions.",
+        beck: "Mental health risk complicates older safety frameworks because harm may be psychosocial, cumulative and linked to work, housing, finance and social pressure."
+      },
+      work: {
+        label: "Work you do",
+        short: "Work",
+        worry2025: 51,
+        harm2025: 16,
+        worryTrend: { 2021: 48, 2023: 51, 2025: 51 },
+        harmTrend: { 2021: 19, 2023: 18, 2025: 16 },
+        note: "The report highlights workplace harm as a case where harm is comparatively high relative to worry.",
+        beck: "Workplace risk connects strongly to power and inequality: people may know a job is harmful but have limited ability to refuse unsafe conditions."
+      },
+      water: {
+        label: "Water you drink",
+        short: "Drinking water",
+        worry2025: 53,
+        harm2025: 13,
+        worryTrend: { 2019: 51, 2021: 44, 2023: 49, 2025: 53 },
+        harmTrend: { 2021: 9, 2023: 10, 2025: 13 },
+        note: "The report notes that reported harm from drinking water reached a record high globally.",
+        beck: "Water risk is institutional: people rely on public infrastructure, testing, transparency and trust."
+      },
+      heat: {
+        label: "Severe prolonged weather: heatwaves or droughts",
+        short: "Heatwaves / droughts",
+        worry2025: 71,
+        harm2025: 19,
+        worryTrend: { 2025: 71 },
+        harmTrend: { 2025: 19 },
+        note: "This risk is second only to traffic accidents for worry and has the highest reported personal harm in 2025 among these risks.",
+        beck: "Prolonged heat and drought blur the boundary between natural and manufactured risk because harm depends on climate, labour, housing, health and infrastructure."
+      },
+      wildfire: {
+        label: "Wildfires",
+        short: "Wildfires",
+        worry2025: 56,
+        harm2025: 8,
+        worryTrend: { 2025: 56 },
+        harmTrend: { 2025: 8 },
+        note: "Wildfires have one of the widest worry–harm gaps in the global 2025 data.",
+        beck: "Wildfire risk combines climate, land use, emergency planning, insurance, housing location and media visibility."
+      },
+      air: {
+        label: "Air you breathe",
+        short: "Air pollution",
+        worry2025: 52,
+        harm2025: 12,
+        worryTrend: { 2025: 52 },
+        harmTrend: { 2025: 12 },
+        note: "Air pollution is a useful example of a risk that can be hard to perceive directly and may require expert measurement.",
+        beck: "Air pollution is often invisible and cumulative, so people depend on expert systems, data transparency and institutions to know and act on the risk."
+      }
+    };
+
+    const lenses = {
+      none: {
+        label: "description only",
+        prompt: "First describe the data without adding an explanation. What is measured, and what is not measured?"
+      },
+      visibility: {
+        label: "Visibility and media salience",
+        prompt: "Does this risk become more worrying because it is visible, dramatic, memorable, heavily reported or politically discussed?"
+      },
+      normalisation: {
+        label: "Normalisation of everyday harm",
+        prompt: "Could people become used to this risk because it is routine, familiar or built into everyday life?"
+      },
+      institutions: {
+        label: "Institutions, regulation and infrastructure",
+        prompt: "Which institutions manage this risk, and how might regulation, infrastructure, employers or public services reduce or increase harm?"
+      },
+      agency: {
+        label: "Control, agency and individualisation",
+        prompt: "Are individuals expected to manage this risk themselves? Do they actually have enough power and resources to do so?"
+      },
+      inequality: {
+        label: "Inequality and vulnerability",
+        prompt: "Which groups may be more exposed or less protected? Could the global average hide differences by income, region, work, housing or health?"
+      },
+      expert: {
+        label: "Expert knowledge and invisible risk",
+        prompt: "Is this risk difficult to sense directly? Does it depend on expert measurement, statistics or trust in institutions?"
+      }
+    };
+
+    const riskSelect = document.getElementById("riskSelect");
+    const lensSelect = document.getElementById("lensSelect");
+
+    function clamp(n, min = 0, max = 100) {
+      return Math.max(min, Math.min(max, n));
+    }
+
+    function round(n) {
+      return Math.round(n);
+    }
+
+    function xScale(harm) {
+      return 86 + (harm / 20) * 500;
+    }
+
+    function yScale(worry) {
+      return 430 - (worry / 80) * 380;
+    }
+
+    function trendX(year, years) {
+      if (years.length === 1) return 392;
+      const min = Math.min(...years);
+      const max = Math.max(...years);
+      return 94 + ((year - min) / (max - min)) * 596;
+    }
+
+    function trendY(value) {
+      return 246 - (value / 80) * 210;
+    }
+
+    function zoneFor(risk) {
+      const highHarm = risk.harm2025 >= 14;
+      const highWorry = risk.worry2025 >= 60;
+
+      if (highHarm && highWorry) {
+        return {
+          short: "High worry / higher harm",
+          tag: "Recognised serious risk",
+          hint: "Public concern and reported harm are both comparatively high.",
+          text: "This risk is in the high-worry / higher-harm area. It is likely to attract attention because concern and reported harm point in the same direction."
+        };
+      }
+
+      if (!highHarm && highWorry) {
+        return {
+          short: "High worry / lower harm",
+          tag: "High salience risk",
+          hint: "Worry is high compared with recent personal harm.",
+          text: "This risk is in the high-worry / lower-harm area. This does not mean the risk is unimportant; it means worry is especially high compared with reported recent personal harm."
+        };
+      }
+
+      if (highHarm && !highWorry) {
+        return {
+          short: "Higher harm / lower worry",
+          tag: "Hidden or normalised harm",
+          hint: "Reported harm is comparatively high relative to worry.",
+          text: "This risk sits in the higher-harm / lower-worry area. This is sociologically important because everyday harm may be normalised, invisible or experienced by groups with less power."
+        };
+      }
+
+      return {
+        short: "Lower worry / lower harm",
+        tag: "Lower global salience",
+        hint: "Both measures are lower relative to the other risks in this dataset.",
+        text: "This risk is in the lower-worry / lower-harm area compared with the other risks shown here. That could reflect lower danger, better management, or the limits of global averages."
+      };
+    }
+
+    function gapText(gap) {
+      if (gap >= 50) return "very large";
+      if (gap >= 40) return "large";
+      if (gap >= 30) return "moderate";
+      return "smaller";
+    }
+
+    function populateSelect() {
+      Object.entries(risks).forEach(([key, risk]) => {
+        const option = document.createElement("option");
+        option.value = key;
+        option.textContent = risk.label;
+        riskSelect.appendChild(option);
+      });
+      riskSelect.value = "road";
+    }
+
+    function drawScatter(selectedKey) {
+      const group = document.getElementById("scatterPoints");
+      group.innerHTML = "";
+
+      Object.entries(risks).forEach(([key, risk]) => {
+        const selected = key === selectedKey;
+        const x = xScale(risk.harm2025);
+        const y = yScale(risk.worry2025);
+
+        const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        circle.setAttribute("cx", x);
+        circle.setAttribute("cy", y);
+        circle.setAttribute("r", selected ? 12 : 8);
+        circle.setAttribute("class", selected ? "point selected" : "point");
+        circle.setAttribute("tabindex", "0");
+        circle.setAttribute("role", "button");
+        circle.setAttribute("aria-label", `${risk.label}: ${risk.worry2025}% worried, ${risk.harm2025}% experienced harm`);
+        circle.addEventListener("click", () => {
+          riskSelect.value = key;
+          update();
+        });
+        group.appendChild(circle);
+
+        const label = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        const labelX = x + 12 > 560 ? x - 88 : x + 12;
+        const labelY = y - 12 < 55 ? y + 24 : y - 10;
+        label.setAttribute("x", labelX);
+        label.setAttribute("y", labelY);
+        label.setAttribute("class", selected ? "point-label selected" : "point-label");
+        label.textContent = risk.short;
+        group.appendChild(label);
+      });
+    }
+
+    function drawTrend(risk) {
+      const group = document.getElementById("trendContent");
+      group.innerHTML = "";
+
+      const years = Array.from(new Set([
+        ...Object.keys(risk.worryTrend),
+        ...Object.keys(risk.harmTrend)
+      ].map(Number))).sort();
+
+      years.forEach(year => {
+        const x = trendX(year, years);
+        const tick = document.createElementNS("http://www.w3.org/2000/svg", "line");
+        tick.setAttribute("x1", x);
+        tick.setAttribute("x2", x);
+        tick.setAttribute("y1", 246);
+        tick.setAttribute("y2", 252);
+        tick.setAttribute("class", "axis");
+        group.appendChild(tick);
+
+        const txt = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        txt.setAttribute("x", x);
+        txt.setAttribute("y", 275);
+        txt.setAttribute("text-anchor", "middle");
+        txt.setAttribute("class", "chart-small");
+        txt.textContent = year;
+        group.appendChild(txt);
+      });
+
+      function drawSeries(values, clsLine, clsDot, yOffset) {
+        const entries = Object.entries(values).map(([year, value]) => [Number(year), value]).sort((a, b) => a[0] - b[0]);
+        if (entries.length > 1) {
+          const pathData = entries.map(([year, value], index) => `${index === 0 ? "M" : "L"} ${trendX(year, years)} ${trendY(value)}`).join(" ");
+          const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+          path.setAttribute("d", pathData);
+          path.setAttribute("class", clsLine);
+          group.appendChild(path);
+        }
+
+        entries.forEach(([year, value]) => {
+          const x = trendX(year, years);
+          const y = trendY(value);
+
+          const dot = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+          dot.setAttribute("cx", x);
+          dot.setAttribute("cy", y);
+          dot.setAttribute("r", 6);
+          dot.setAttribute("class", clsDot);
+          group.appendChild(dot);
+
+          const label = document.createElementNS("http://www.w3.org/2000/svg", "text");
+          label.setAttribute("x", x);
+          label.setAttribute("y", y + yOffset);
+          label.setAttribute("text-anchor", "middle");
+          label.setAttribute("class", "chart-small");
+          label.textContent = `${value}%`;
+          group.appendChild(label);
+        });
+      }
+
+      drawSeries(risk.worryTrend, "line-worry", "trend-dot-worry", -12);
+      drawSeries(risk.harmTrend, "line-harm", "trend-dot-harm", 20);
+
+      const trendHint = document.getElementById("trendHint");
+      if (years.length === 1) {
+        trendHint.textContent = "This risk was newly included in 2025, so the report does not show earlier comparable trend data for it.";
+      } else {
+        trendHint.textContent = "Trend values are shown where the report provides comparable years.";
+      }
+    }
+
+    function updateCards(risk, zone) {
+      const gap = risk.worry2025 - risk.harm2025;
+
+      document.getElementById("worryMetric").textContent = risk.worry2025;
+      document.getElementById("harmMetric").textContent = risk.harm2025;
+      document.getElementById("gapMetric").textContent = gap;
+      document.getElementById("zoneMetric").textContent = zone.short;
+      document.getElementById("zoneHint").textContent = zone.hint;
+
+      document.getElementById("worryBar").style.width = risk.worry2025 + "%";
+      document.getElementById("harmBar").style.width = risk.harm2025 + "%";
+      document.getElementById("gapBar").style.width = clamp(gap) + "%";
+    }
+
+    function updateTable(selectedKey) {
+      const tbody = document.querySelector("#dataTable tbody");
+      tbody.innerHTML = "";
+
+      Object.entries(risks)
+        .sort((a, b) => b[1].worry2025 - a[1].worry2025)
+        .forEach(([key, risk]) => {
+          const tr = document.createElement("tr");
+          if (key === selectedKey) tr.className = "highlight";
+          tr.innerHTML = `
+            <td>${risk.label}</td>
+            <td>${risk.worry2025}%</td>
+            <td>${risk.harm2025}%</td>
+            <td>${risk.worry2025 - risk.harm2025} pts</td>
+          `;
+          tbody.appendChild(tr);
+        });
+    }
+
+    function updateText(risk, zone) {
+      const lensKey = lensSelect.value;
+      const lens = lenses[lensKey];
+      const gap = risk.worry2025 - risk.harm2025;
+
+      document.getElementById("riskHint").textContent = risk.note;
+      document.getElementById("zoneTag").textContent = zone.tag;
+
+      document.getElementById("dataText").textContent =
+        `${risk.label}: ${risk.worry2025}% of adults are worried about serious harm from this risk, while ${risk.harm2025}% report personally experiencing serious harm from it in the past two years. The worry–harm gap is ${gap} percentage points, which is ${gapText(gap)} compared with the other risks in this widget. ${zone.text}`;
+
+      document.getElementById("beckText").textContent =
+        `${risk.beck} Explanation to test: ${lens.prompt}`;
+
+      document.getElementById("questionText").textContent =
+        lensKey === "none"
+          ? "What does this data show clearly, and what can it not show on its own?"
+          : `How far does ${lens.label} help explain the gap between worry and reported harm? What evidence would you need to support this interpretation?`;
+
+      updateReflection(risk, zone, lens);
+    }
+
+    function updateReflection(risk, zone, lens) {
+      const gap = risk.worry2025 - risk.harm2025;
+      const box = document.getElementById("reflectionBox");
+
+      const text =
+`Risk selected: ${risk.label}
+
+1. Data description:
+In the World Risk Poll 2025 data used here, ${risk.worry2025}% of adults are worried that this risk could cause serious harm. ${risk.harm2025}% report personally experiencing serious harm from it in the past two years. The worry–harm gap is ${gap} percentage points.
+
+2. Pattern:
+This places the risk in the "${zone.short}" area. ${zone.text}
+
+3. Beck / risk society interpretation:
+${risk.beck} I am testing the explanation of ${lens.label}: ${lens.prompt}
+
+4. Source reliability:
+I would treat the report as useful evidence for comparing self-reported worry and self-reported experience of harm across everyday risks. It is strong because it is a large global survey, but I would use it with caution because self-reported worry and harm are not the same as objective exposure or verified injury data.
+
+5. My question:
+${document.getElementById("questionText").textContent}`;
+
+      if (document.activeElement !== box) {
+        box.value = text;
+      }
+    }
+
+    function update() {
+      const selectedKey = riskSelect.value;
+      const risk = risks[selectedKey];
+      const zone = zoneFor(risk);
+
+      updateCards(risk, zone);
+      drawScatter(selectedKey);
+      drawTrend(risk);
+      updateTable(selectedKey);
+      updateText(risk, zone);
+    }
+
+    document.getElementById("randomBtn").addEventListener("click", () => {
+      const keys = Object.keys(risks);
+      riskSelect.value = keys[Math.floor(Math.random() * keys.length)];
+      update();
+    });
+
+    document.getElementById("copyBtn").addEventListener("click", async () => {
+      const box = document.getElementById("reflectionBox");
+      box.select();
+      try {
+        await navigator.clipboard.writeText(box.value);
+        document.getElementById("copyBtn").textContent = "Copied";
+        setTimeout(() => document.getElementById("copyBtn").textContent = "Copy my reflection", 1200);
+      } catch (err) {
+        document.execCommand("copy");
+      }
+    });
+
+    riskSelect.addEventListener("change", update);
+    lensSelect.addEventListener("change", update);
+
+    populateSelect();
+    update();
+  </script>
+</body>
+</html>
